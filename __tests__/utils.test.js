@@ -1,5 +1,6 @@
 const {
-  convertTimestampToDate
+  convertTimestampToDate,
+  createRef
 } = require("../db/seeds/utils");
 
 describe("convertTimestampToDate", () => {
@@ -38,3 +39,10 @@ describe("convertTimestampToDate", () => {
   });
 });
 
+describe.only('createRef', () => {
+  test('should return an empty object when passed an empty array', () => {
+    const input = []
+    const result = createRef(input)
+    expect(result).toEqual({})
+  })
+})
