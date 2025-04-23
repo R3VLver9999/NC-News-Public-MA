@@ -590,10 +590,10 @@ describe('data insertion', () => {
         expect(comment).toHaveProperty('comment_id');
         expect(comment).toHaveProperty('body');
         expect(comment).toHaveProperty('article_id');
-        expect(comment.article_id).not.toBeNull()
         expect(comment).toHaveProperty('author');
         expect(comment).toHaveProperty('votes');
         expect(comment).toHaveProperty('created_at');
+        expect(typeof comment.article_id).toBe("number");
       });
     });
   });
