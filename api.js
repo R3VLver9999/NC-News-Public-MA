@@ -1,4 +1,4 @@
-const { getApi, getTopics, getArticleById } = require("./news.controller.js")
+const { getApi, getTopics } = require("./news.controller.js")
 
 const db = require("./db/connection.js");
 const express = require("express");

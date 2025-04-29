@@ -8,4 +8,4 @@ const requestTopics = () => {
     })
 }
 
-module.exports = { requestTopics, requestArticle }
+module.exports = { requestTopics }

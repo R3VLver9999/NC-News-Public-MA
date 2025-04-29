@@ -1,4 +1,4 @@
-const { requestTopics, requestArticle } = require("./news.model.js");
+const { requestTopics } = require("./news.model.js");
 const endpointsJson = require("./endpoints.json");
 
 const getApi = (req, res, next) => {
@@ -15,4 +15,4 @@ const getTopics = (req, res, next) => {
     });
 };
 
-module.exports = { getApi, getTopics, getArticleById };
+module.exports = { getApi, getTopics };

@@ -61,7 +61,7 @@ describe("GET /topics", () => {
   });
 });
 
-describe.only("Error handling", () => {
+describe("Error handling", () => {
   test("404: Returns 404 error when an incorrect path is provided", () => {
     return request(app)
     .get("/api/topisc")
