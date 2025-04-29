@@ -61,14 +61,96 @@ describe("GET /topics", () => {
   });
 });
 
-describe("Error handling", () => {
-  test("404: Returns 404 error when an incorrect path is provided", () => {
+describe("Get /article/:article_id", () => {
+  test("200: Responds with an object", () => {
     return request(app)
-    .get("/api/topisc")
-    .expect(404)
-    .then((response) => {
-        expect(response.body.message).toBe("Not found")
-    })
+      .get("/api/articles/2")
+      .expect(200)
+      .then((response) => {
+        expect(typeof response.body).toBe("object");
+      });
+  });
+  test("200: Responds with an article object that contains an 'author' property", () => {
+    return request(app)
+      .get("/api/articles/2")
+      .expect(200)
+      .then((response) => {
+        expect(response.body).toHaveProperty("author", expect.any(String));
+      });
+  });
+  test("200: Responds with an article object that contains a 'title' property", () => {
+    return request(app)
+      .get("/api/articles/2")
+      .expect(200)
+      .then((response) => {
+        expect(response.body).toHaveProperty("title", expect.any(String));
+      });
+  });
+  test("200: Responds with an article object that contains a 'article_id' property", () => {
+    return request(app)
+      .get("/api/articles/2")
+      .expect(200)
+      .then((response) => {
+        expect(response.body).toHaveProperty("article_id", expect.any(Number));
+      });
+  });
+  test("200: Responds with an article object that contains a 'body' property", () => {
+    return request(app)
+      .get("/api/articles/2")
+      .expect(200)
+      .then((response) => {
+        expect(response.body).toHaveProperty("body", expect.any(String));
+      });
+  });
+  test("200: Responds with an article object that contains a 'topic' property", () => {
+    return request(app)
+      .get("/api/articles/2")
+      .expect(200)
+      .then((response) => {
+        expect(response.body).toHaveProperty("topic", expect.any(String));
+      });
+  });
+  test("200: Responds with an article object that contains a 'created_at' property", () => {
+    return request(app)
+      .get("/api/articles/2")
+      .expect(200)
+      .then((response) => {
+        expect(response.body).toHaveProperty("created_at", expect.any(String));
+      });
+  });
+  test("200: Responds with an article object that contains a 'votes' property", () => {
+    return request(app)
+      .get("/api/articles/2")
+      .expect(200)
+      .then((response) => {
+        expect(response.body).toHaveProperty("votes", expect.any(Number));
+      });
+  });
+  test("200: Responds with an article object that contains an 'article_img_url' property", () => {
+    return request(app)
+      .get("/api/articles/2")
+      .expect(200)
+      .then((response) => {
+        expect(response.body).toHaveProperty("article_img_url", expect.any(String));
+      });
   });
 });
 
+describe.only("Error handling", () => {
+  test("404: Returns 404 error when an incorrect path is provided", () => {
+    return request(app)
+      .get("/api/topisc")
+      .expect(404)
+      .then((response) => {
+        expect(response.body.message).toBe("Not found");
+      });
+  });
+  test("400: Returns 400 error when a bad request is made", () => {
+    return request(app)
+      .get("/api/articles/newspaper")
+      .expect(400)
+      .then((response) => {
+        expect(response.body.message).toBe("Bad request");
+      });
+  });
+});
