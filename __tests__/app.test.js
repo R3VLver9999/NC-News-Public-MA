@@ -131,12 +131,113 @@ describe("Get /article/:article_id", () => {
       .get("/api/articles/2")
       .expect(200)
       .then((response) => {
-        expect(response.body).toHaveProperty("article_img_url", expect.any(String));
+        expect(response.body).toHaveProperty(
+          "article_img_url",
+          expect.any(String)
+        );
       });
   });
 });
 
-describe.only("Error handling", () => {
+describe("/api/articles", () => {
+  test("200: Responds with an object", () => {
+    return request(app)
+      .get("/api/articles")
+      .expect(200)
+      .then((response) => {
+        expect(typeof response.body).toBe("object");
+      });
+  });
+  test("200: Tests that articles objects have an author key", () => {
+    return request(app)
+      .get("/api/articles")
+      .expect(200)
+      .then((response) => {
+        expect(response.body.articles.length).toBe(13);
+        response.body.articles.forEach((object) => {
+          expect(object).toHaveProperty("author", expect.any(String));
+        });
+      });
+  });
+  test("200: Tests that articles objects have a title key", () => {
+    return request(app)
+      .get("/api/articles")
+      .expect(200)
+      .then((response) => {
+        expect(response.body.articles.length).toBe(13);
+        response.body.articles.forEach((object) => {
+          expect(object).toHaveProperty("title", expect.any(String));
+        });
+      });
+  });
+  test("200: Tests that articles objects have a article_id key", () => {
+    return request(app)
+      .get("/api/articles")
+      .expect(200)
+      .then((response) => {
+        expect(response.body.articles.length).toBe(13);
+        response.body.articles.forEach((object) => {
+          expect(object).toHaveProperty("article_id", expect.any(Number));
+        });
+      });
+  });
+  test("200: Tests that articles objects have a topic key", () => {
+    return request(app)
+      .get("/api/articles")
+      .expect(200)
+      .then((response) => {
+        expect(response.body.articles.length).toBe(13);
+        response.body.articles.forEach((object) => {
+          expect(object).toHaveProperty("topic", expect.any(String));
+        });
+      });
+  });
+  test("200: Tests that articles objects have a created_at key", () => {
+    return request(app)
+      .get("/api/articles")
+      .expect(200)
+      .then((response) => {
+        expect(response.body.articles.length).toBe(13);
+        response.body.articles.forEach((object) => {
+          expect(object).toHaveProperty("created_at", expect.any(String));
+        });
+      });
+  });
+  test("200: Tests that articles objects have a votes key", () => {
+    return request(app)
+      .get("/api/articles")
+      .expect(200)
+      .then((response) => {
+        expect(response.body.articles.length).toBe(13);
+        response.body.articles.forEach((object) => {
+          expect(object).toHaveProperty("votes", expect.any(Number));
+        });
+      });
+  });
+  test("200: Tests that articles objects have an article_img_url key", () => {
+    return request(app)
+      .get("/api/articles")
+      .expect(200)
+      .then((response) => {
+        expect(response.body.articles.length).toBe(13);
+        response.body.articles.forEach((object) => {
+          expect(object).toHaveProperty("article_img_url", expect.any(String));
+        });
+      });
+  });
+  test("200: Tests that the articles are returned in descending order of their creation date", () => {
+    return request(app)
+      .get("/api/articles")
+      .expect(200)
+      .then((response) => {
+        expect(response.body.articles).toBeSortedBy("created_at", {
+          descending: true,
+        });
+      });
+  });
+});
+
+describe("Error handling", () => {
   test("404: Returns 404 error when an incorrect path is provided", () => {
     return request(app)
       .get("/api/topisc")

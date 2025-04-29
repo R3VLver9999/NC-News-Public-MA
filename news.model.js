@@ -8,6 +8,15 @@ const requestTopics = () => {
     })
 }
 
+const requestArticles = () => {
+    return db 
+    .query(`SELECT * FROM articles ORDER BY created_at DESC`)
+    .then(({rows}) => {
+        const newRows = rows.map(({body, ...values}) => values)
+        return newRows
+    })
+}
+
 const requestArticle = (article_id) => {
     return db 
     .query(`SELECT * FROM articles WHERE article_id = $1`, [article_id])
@@ -20,4 +29,4 @@ const requestArticle = (article_id) => {
     })
 }
 
-module.exports = { requestTopics, requestArticle }
+module.exports = { requestTopics, requestArticles, requestArticle }
