@@ -1,4 +1,5 @@
 const { getApi, getTopics, getArticleById } = require("./news.controller.js")
+
 const db = require("./db/connection.js");
 const express = require("express");
 const app = express();
@@ -24,5 +25,4 @@ app.use((err, req, res, next) => {
     console.log(err)
     res.status(500).send({ message: "Internal server error" });
 });
-
 module.exports = app

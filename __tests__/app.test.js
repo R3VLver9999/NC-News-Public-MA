@@ -6,6 +6,7 @@ const request = require("supertest");
 const seed = require("../db/seeds/seed.js");
 const data = require("../db/data/test-data/index.js");
 require("jest-sorted");
+
 /* Set up your beforeEach & afterAll functions here */
 beforeEach(() => {
   return seed(data);
@@ -70,3 +71,4 @@ describe.only("Error handling", () => {
     })
   });
 });
+
