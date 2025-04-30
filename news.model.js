@@ -16,7 +16,7 @@ const requestArticles = () => {
       ORDER BY created_at DESC;`
     )
     .then(({ rows }) => {
-      return rows
+      return rows;
     });
 };
 
@@ -32,6 +32,21 @@ const requestArticle = (article_id) => {
     });
 };
 
-module.exports = { requestTopics, requestArticles, requestArticle };
+const requestCommentsFromArticle = (article_id) => {
+  return db
+    .query(`SELECT * FROM comments WHERE article_id = $1 ORDER BY created_at ASC`, [article_id])
+    .then(({ rows }) => {
+      if (rows.length === 0) {
+        return Promise.reject({ status: 404, message: "article_id not found" });
+      } else {
+        return rows;
+      }
+    });
+};
 
-// db.query(`SELECT COUNT(*) FROM comments WHERE article_id = $1`)
+module.exports = {
+  requestTopics,
+  requestArticles,
+  requestArticle,
+  requestCommentsFromArticle,
+};

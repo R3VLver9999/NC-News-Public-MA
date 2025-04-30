@@ -1,4 +1,4 @@
-const { requestTopics,  requestArticles, requestArticle } = require("./news.model.js");
+const { requestTopics,  requestArticles, requestArticle, requestCommentsFromArticle } = require("./news.model.js");
 const endpointsJson = require("./endpoints.json");
 
 const getApi = (req, res, next) => {
@@ -37,4 +37,16 @@ const getArticleById = (req, res, next) => {
   })
 }
 
-module.exports = { getApi, getTopics, getArticles, getArticleById };
+const getCommentById = (req, res, next) => {
+  const article_id = req.params.article_id
+
+  return requestCommentsFromArticle(article_id)
+  .then((comments) => {
+      res.status(200).send({comments: comments})
+  })
+  .catch((err) => {
+      next(err)
+  })
+}
+
+module.exports = { getApi, getTopics, getArticles, getArticleById, getCommentById };
