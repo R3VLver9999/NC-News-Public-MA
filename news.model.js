@@ -34,7 +34,10 @@ const requestArticle = (article_id) => {
 
 const requestCommentsFromArticle = (article_id) => {
   return db
-    .query(`SELECT * FROM comments WHERE article_id = $1 ORDER BY created_at ASC`, [article_id])
+    .query(
+      `SELECT * FROM comments WHERE article_id = $1 ORDER BY created_at ASC`,
+      [article_id]
+    )
     .then(({ rows }) => {
       if (rows.length === 0) {
         return Promise.reject({ status: 404, message: "article_id not found" });
@@ -44,9 +47,23 @@ const requestCommentsFromArticle = (article_id) => {
     });
 };
 
+const addNewComment = (comment, article_id) => {
+  return db
+  .query(
+    `INSERT INTO comments (article_id, author, body) VALUES ($1, $2, $3) RETURNING author, body`,
+    [article_id, comment.username, comment.body]
+  )
+  .then(({rows}) => {
+    rows[0].username = rows[0].author
+    delete rows[0].author
+    return rows[0]
+  })
+};
+
 module.exports = {
   requestTopics,
   requestArticles,
   requestArticle,
   requestCommentsFromArticle,
+  addNewComment
 };

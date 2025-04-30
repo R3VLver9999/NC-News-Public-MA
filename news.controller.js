@@ -1,4 +1,4 @@
-const { requestTopics,  requestArticles, requestArticle, requestCommentsFromArticle } = require("./news.model.js");
+const { requestTopics,  requestArticles, requestArticle, requestCommentsFromArticle, addNewComment } = require("./news.model.js");
 const endpointsJson = require("./endpoints.json");
 
 const getApi = (req, res, next) => {
@@ -49,4 +49,18 @@ const getCommentById = (req, res, next) => {
   })
 }
 
-module.exports = { getApi, getTopics, getArticles, getArticleById, getCommentById };
+const postComment = (req, res, next) => {
+  const { article_id } = req.params
+  const comment = req.body
+  return addNewComment(comment, article_id)
+  .then((comment) => {
+    console.log(comment)
+    if (comment.body === "") {
+      res.status(400).send({message: "Bad request"})
+    } else {
+      res.status(201).send({comment})
+    }
+  })
+}
+
+module.exports = { getApi, getTopics, getArticles, getArticleById, getCommentById, postComment };
