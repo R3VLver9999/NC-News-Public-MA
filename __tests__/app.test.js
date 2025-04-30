@@ -47,7 +47,7 @@ describe("GET /topics", () => {
           expect(topic).toEqual({
             description: expect.any(String),
             slug: expect.any(String),
-            img_url: expect.any(String)
+            img_url: expect.any(String),
           });
         });
       });
@@ -149,16 +149,34 @@ describe("GET /api/articles/:article_id/comments", () => {
           });
         });
       });
-  })
+  });
   test("200: Tests that the comments are returned in ascending order of their creation date", () => {
     return request(app)
       .get("/api/articles/1/comments")
       .expect(200)
       .then((response) => {
-        expect(response.body.comments).toBeSortedBy("created_at")
+        expect(response.body.comments).toBeSortedBy("created_at");
       });
   });
-})
+});
+
+describe("POST /api/articles/:article_id/comments", () => {
+  test("200: Tests that request returns posted comment", () => {
+    return request(app)
+      .post("/api/articles/3/comments")
+      .send({
+        body: "Hello!",
+        username: "butter_bridge",
+      })
+      .expect(201)
+      .then(({ body }) => {
+        expect(body.comment).toEqual({
+          body: "Hello!",
+          username: "butter_bridge",
+        });
+      });
+  });
+});
 
 describe("Error handling", () => {
   describe("GET /topics", () => {
@@ -181,4 +199,30 @@ describe("Error handling", () => {
         });
     });
   });
+  describe("POST /api/articles/:article_id/comments", ()=> {
+    test("500: Resturns a 500 error when an invalid username is given", () => {
+      return request(app)
+      .post("/api/articles/3/comments")
+      .send({
+        body: "Hello!",
+        username: "I AM ERROR",
+      })
+      .expect(500)
+      .then(({ body }) => {
+        expect(body.message).toBe("Internal server error");
+      });
+    })
+    test("400: Resturns a 400 error when the comment body is empty", () => {
+      return request(app)
+      .post("/api/articles/3/comments")
+      .send({
+        body: "",
+        username: "butter_bridge",
+      })
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.message).toBe("Bad request");
+      });
+    })
+  })
 });
