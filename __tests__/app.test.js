@@ -61,7 +61,7 @@ describe("GET /topics", () => {
   });
 });
 
-describe("Get /article/:article_id", () => {
+describe("GET /article/:article_id", () => {
   test("200: Responds with an object", () => {
     return request(app)
       .get("/api/articles/2")
@@ -139,7 +139,7 @@ describe("Get /article/:article_id", () => {
   });
 });
 
-describe("/api/articles", () => {
+describe("GET /api/articles", () => {
   test("200: Responds with an object", () => {
     return request(app)
       .get("/api/articles")
@@ -155,73 +155,16 @@ describe("/api/articles", () => {
       .then((response) => {
         expect(response.body.articles.length).toBe(13);
         response.body.articles.forEach((object) => {
-          expect(object).toHaveProperty("author", expect.any(String));
-        });
-      });
-  });
-  test("200: Tests that articles objects have a title key", () => {
-    return request(app)
-      .get("/api/articles")
-      .expect(200)
-      .then((response) => {
-        expect(response.body.articles.length).toBe(13);
-        response.body.articles.forEach((object) => {
-          expect(object).toHaveProperty("title", expect.any(String));
-        });
-      });
-  });
-  test("200: Tests that articles objects have a article_id key", () => {
-    return request(app)
-      .get("/api/articles")
-      .expect(200)
-      .then((response) => {
-        expect(response.body.articles.length).toBe(13);
-        response.body.articles.forEach((object) => {
-          expect(object).toHaveProperty("article_id", expect.any(Number));
-        });
-      });
-  });
-  test("200: Tests that articles objects have a topic key", () => {
-    return request(app)
-      .get("/api/articles")
-      .expect(200)
-      .then((response) => {
-        expect(response.body.articles.length).toBe(13);
-        response.body.articles.forEach((object) => {
-          expect(object).toHaveProperty("topic", expect.any(String));
-        });
-      });
-  });
-  test("200: Tests that articles objects have a created_at key", () => {
-    return request(app)
-      .get("/api/articles")
-      .expect(200)
-      .then((response) => {
-        expect(response.body.articles.length).toBe(13);
-        response.body.articles.forEach((object) => {
-          expect(object).toHaveProperty("created_at", expect.any(String));
-        });
-      });
-  });
-  test("200: Tests that articles objects have a votes key", () => {
-    return request(app)
-      .get("/api/articles")
-      .expect(200)
-      .then((response) => {
-        expect(response.body.articles.length).toBe(13);
-        response.body.articles.forEach((object) => {
-          expect(object).toHaveProperty("votes", expect.any(Number));
-        });
-      });
-  });
-  test("200: Tests that articles objects have an article_img_url key", () => {
-    return request(app)
-      .get("/api/articles")
-      .expect(200)
-      .then((response) => {
-        expect(response.body.articles.length).toBe(13);
-        response.body.articles.forEach((object) => {
-          expect(object).toHaveProperty("article_img_url", expect.any(String));
+          expect(object).toEqual({
+            author: expect.any(String),
+            title: expect.any(String),
+            article_id: expect.any(Number),
+            topic: expect.any(String),
+            created_at: expect.any(String),
+            votes: expect.any(Number),
+            article_img_url: expect.any(String),
+            comment_count: expect.any(String)
+          });
         });
       });
   });
@@ -238,20 +181,24 @@ describe("/api/articles", () => {
 });
 
 describe("Error handling", () => {
-  test("404: Returns 404 error when an incorrect path is provided", () => {
-    return request(app)
-      .get("/api/topisc")
-      .expect(404)
-      .then((response) => {
-        expect(response.body.message).toBe("Not found");
-      });
+  describe("GET /topics", () => {
+    test("404: Returns 404 error when an incorrect path is provided", () => {
+      return request(app)
+        .get("/api/topisc")
+        .expect(404)
+        .then((response) => {
+          expect(response.body.message).toBe("Not found");
+        });
+    });
   });
-  test("400: Returns 400 error when a bad request is made", () => {
-    return request(app)
-      .get("/api/articles/newspaper")
-      .expect(400)
-      .then((response) => {
-        expect(response.body.message).toBe("Bad request");
-      });
+  describe("GET /article/:article_id", () => {
+    test("400: Returns 400 error when a bad request is made", () => {
+      return request(app)
+        .get("/api/articles/newspaper")
+        .expect(400)
+        .then((response) => {
+          expect(response.body.message).toBe("Bad request");
+        });
+    });
   });
 });
