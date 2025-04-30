@@ -61,7 +61,7 @@ describe("GET /topics", () => {
   });
 });
 
-describe("Get /article/:article_id", () => {
+describe("GET /article/:article_id", () => {
   test("200: Responds with an object", () => {
     return request(app)
       .get("/api/articles/2")
@@ -131,26 +131,74 @@ describe("Get /article/:article_id", () => {
       .get("/api/articles/2")
       .expect(200)
       .then((response) => {
-        expect(response.body).toHaveProperty("article_img_url", expect.any(String));
+        expect(response.body).toHaveProperty(
+          "article_img_url",
+          expect.any(String)
+        );
       });
   });
 });
 
-describe.only("Error handling", () => {
-  test("404: Returns 404 error when an incorrect path is provided", () => {
+describe("GET /api/articles", () => {
+  test("200: Responds with an object", () => {
     return request(app)
-      .get("/api/topisc")
-      .expect(404)
+      .get("/api/articles")
+      .expect(200)
       .then((response) => {
-        expect(response.body.message).toBe("Not found");
+        expect(typeof response.body).toBe("object");
       });
   });
-  test("400: Returns 400 error when a bad request is made", () => {
+  test("200: Tests that articles objects have an author key", () => {
     return request(app)
-      .get("/api/articles/newspaper")
-      .expect(400)
+      .get("/api/articles")
+      .expect(200)
       .then((response) => {
-        expect(response.body.message).toBe("Bad request");
+        expect(response.body.articles.length).toBe(13);
+        response.body.articles.forEach((object) => {
+          expect(object).toEqual({
+            author: expect.any(String),
+            title: expect.any(String),
+            article_id: expect.any(Number),
+            topic: expect.any(String),
+            created_at: expect.any(String),
+            votes: expect.any(Number),
+            article_img_url: expect.any(String),
+            comment_count: expect.any(String)
+          });
+        });
       });
+  });
+  test("200: Tests that the articles are returned in descending order of their creation date", () => {
+    return request(app)
+      .get("/api/articles")
+      .expect(200)
+      .then((response) => {
+        expect(response.body.articles).toBeSortedBy("created_at", {
+          descending: true,
+        });
+      });
+  });
+});
+
+describe("Error handling", () => {
+  describe("GET /topics", () => {
+    test("404: Returns 404 error when an incorrect path is provided", () => {
+      return request(app)
+        .get("/api/topisc")
+        .expect(404)
+        .then((response) => {
+          expect(response.body.message).toBe("Not found");
+        });
+    });
+  });
+  describe("GET /article/:article_id", () => {
+    test("400: Returns 400 error when a bad request is made", () => {
+      return request(app)
+        .get("/api/articles/newspaper")
+        .expect(400)
+        .then((response) => {
+          expect(response.body.message).toBe("Bad request");
+        });
+    });
   });
 });
