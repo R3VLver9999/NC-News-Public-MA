@@ -44,18 +44,11 @@ describe("GET /topics", () => {
       .then((response) => {
         expect(response.body.topics.length).toBe(3);
         response.body.topics.forEach((topic) => {
-          expect(topic).toHaveProperty("slug", expect.any(String));
-        });
-      });
-  });
-  test("200: Responds with an object of topics that contain a 'description' property", () => {
-    return request(app)
-      .get("/api/topics")
-      .expect(200)
-      .then((response) => {
-        expect(response.body.topics.length).toBe(3);
-        response.body.topics.forEach((topic) => {
-          expect(topic).toHaveProperty("description", expect.any(String));
+          expect(topic).toEqual({
+            description: expect.any(String),
+            slug: expect.any(String),
+            img_url: expect.any(String)
+          });
         });
       });
   });
@@ -70,71 +63,21 @@ describe("GET /article/:article_id", () => {
         expect(typeof response.body).toBe("object");
       });
   });
-  test("200: Responds with an article object that contains an 'author' property", () => {
+  test("200: Tests that article object has the correct properties", () => {
     return request(app)
       .get("/api/articles/2")
       .expect(200)
       .then((response) => {
-        expect(response.body).toHaveProperty("author", expect.any(String));
-      });
-  });
-  test("200: Responds with an article object that contains a 'title' property", () => {
-    return request(app)
-      .get("/api/articles/2")
-      .expect(200)
-      .then((response) => {
-        expect(response.body).toHaveProperty("title", expect.any(String));
-      });
-  });
-  test("200: Responds with an article object that contains a 'article_id' property", () => {
-    return request(app)
-      .get("/api/articles/2")
-      .expect(200)
-      .then((response) => {
-        expect(response.body).toHaveProperty("article_id", expect.any(Number));
-      });
-  });
-  test("200: Responds with an article object that contains a 'body' property", () => {
-    return request(app)
-      .get("/api/articles/2")
-      .expect(200)
-      .then((response) => {
-        expect(response.body).toHaveProperty("body", expect.any(String));
-      });
-  });
-  test("200: Responds with an article object that contains a 'topic' property", () => {
-    return request(app)
-      .get("/api/articles/2")
-      .expect(200)
-      .then((response) => {
-        expect(response.body).toHaveProperty("topic", expect.any(String));
-      });
-  });
-  test("200: Responds with an article object that contains a 'created_at' property", () => {
-    return request(app)
-      .get("/api/articles/2")
-      .expect(200)
-      .then((response) => {
-        expect(response.body).toHaveProperty("created_at", expect.any(String));
-      });
-  });
-  test("200: Responds with an article object that contains a 'votes' property", () => {
-    return request(app)
-      .get("/api/articles/2")
-      .expect(200)
-      .then((response) => {
-        expect(response.body).toHaveProperty("votes", expect.any(Number));
-      });
-  });
-  test("200: Responds with an article object that contains an 'article_img_url' property", () => {
-    return request(app)
-      .get("/api/articles/2")
-      .expect(200)
-      .then((response) => {
-        expect(response.body).toHaveProperty(
-          "article_img_url",
-          expect.any(String)
-        );
+        expect(response.body).toEqual({
+          author: expect.any(String),
+          title: expect.any(String),
+          article_id: expect.any(Number),
+          topic: expect.any(String),
+          created_at: expect.any(String),
+          votes: expect.any(Number),
+          article_img_url: expect.any(String),
+          body: expect.any(String),
+        });
       });
   });
 });
@@ -148,7 +91,7 @@ describe("GET /api/articles", () => {
         expect(typeof response.body).toBe("object");
       });
   });
-  test("200: Tests that articles objects have an author key", () => {
+  test("200: Tests that articles objects have the correct properties", () => {
     return request(app)
       .get("/api/articles")
       .expect(200)
@@ -163,7 +106,7 @@ describe("GET /api/articles", () => {
             created_at: expect.any(String),
             votes: expect.any(Number),
             article_img_url: expect.any(String),
-            comment_count: expect.any(String)
+            comment_count: expect.any(String),
           });
         });
       });
@@ -180,11 +123,48 @@ describe("GET /api/articles", () => {
   });
 });
 
+describe("GET /api/articles/:article_id/comments", () => {
+  test("200: Responds with an object", () => {
+    return request(app)
+      .get("/api/articles/3/comments")
+      .expect(200)
+      .then((response) => {
+        expect(typeof response.body).toBe("object");
+      });
+  });
+  test("200: Tests that comments have the correct properties", () => {
+    return request(app)
+      .get("/api/articles/3/comments")
+      .expect(200)
+      .then((response) => {
+        expect(response.body.comments.length).toBe(2);
+        response.body.comments.forEach((comment) => {
+          expect(comment).toEqual({
+            comment_id: expect.any(Number),
+            votes: expect.any(Number),
+            article_id: expect.any(Number),
+            body: expect.any(String),
+            created_at: expect.any(String),
+            author: expect.any(String),
+          });
+        });
+      });
+  })
+  test("200: Tests that the comments are returned in ascending order of their creation date", () => {
+    return request(app)
+      .get("/api/articles/1/comments")
+      .expect(200)
+      .then((response) => {
+        expect(response.body.comments).toBeSortedBy("created_at")
+      });
+  });
+})
+
 describe("Error handling", () => {
   describe("GET /topics", () => {
     test("404: Returns 404 error when an incorrect path is provided", () => {
       return request(app)
-        .get("/api/topisc")
+        .get("/api/newspapers")
         .expect(404)
         .then((response) => {
           expect(response.body.message).toBe("Not found");

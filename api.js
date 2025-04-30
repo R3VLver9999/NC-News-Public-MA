@@ -1,4 +1,4 @@
-const { getApi, getTopics, getArticles, getArticleById } = require("./news.controller.js")
+const { getApi, getTopics, getArticles, getArticleById, getCommentById } = require("./news.controller.js")
 
 const db = require("./db/connection.js");
 const express = require("express");
@@ -12,6 +12,8 @@ app.get("/api/topics", getTopics)
 app.get("/api/articles", getArticles)
 
 app.get("/api/articles/:article_id", getArticleById)
+
+app.get("/api/articles/:article_id/comments", getCommentById)
 
 
 app.use((err, req, res, next) => {
