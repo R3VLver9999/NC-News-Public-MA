@@ -1,4 +1,4 @@
-const { getApi, getTopics, getArticles, getArticleById, getCommentById, postComment } = require("./news.controller.js")
+const { getApi, getTopics, getArticles, getArticleById, getCommentById, postComment, patchVotes } = require("./news.controller.js")
 
 const db = require("./db/connection.js");
 const express = require("express");
@@ -16,6 +16,8 @@ app.get("/api/articles/:article_id", getArticleById)
 app.get("/api/articles/:article_id/comments", getCommentById)
 
 app.post("/api/articles/:article_id/comments", postComment)
+
+app.patch("/api/articles/:article_id", patchVotes)
 
 
 app.use((err, req, res, next) => {

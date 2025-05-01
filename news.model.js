@@ -49,13 +49,23 @@ const requestCommentsFromArticle = (article_id) => {
 
 const addNewComment = (comment, article_id) => {
   return db
-  .query(
-    `INSERT INTO comments (article_id, author, body) VALUES ($1, $2, $3) RETURNING author, body`,
-    [article_id, comment.username, comment.body]
+    .query(
+      `INSERT INTO comments (article_id, author, body) VALUES ($1, $2, $3) RETURNING author, body`,
+      [article_id, comment.username, comment.body]
+    )
+    .then(({ rows }) => {
+      rows[0].username = rows[0].author;
+      delete rows[0].author;
+      return rows[0];
+    });
+};
+
+const requestUpdateVotes = (addedVotes, article_id) => {
+  return db.query(
+    `UPDATE articles SET votes = votes + $1 WHERE article_id = $2 RETURNING *`,
+    [addedVotes, article_id]
   )
   .then(({rows}) => {
-    rows[0].username = rows[0].author
-    delete rows[0].author
     return rows[0]
   })
 };
@@ -65,5 +75,6 @@ module.exports = {
   requestArticles,
   requestArticle,
   requestCommentsFromArticle,
-  addNewComment
+  addNewComment,
+  requestUpdateVotes,
 };

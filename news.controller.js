@@ -1,4 +1,11 @@
-const { requestTopics,  requestArticles, requestArticle, requestCommentsFromArticle, addNewComment } = require("./news.model.js");
+const {
+  requestTopics,
+  requestArticles,
+  requestArticle,
+  requestCommentsFromArticle,
+  addNewComment,
+  requestUpdateVotes,
+} = require("./news.model.js");
 const endpointsJson = require("./endpoints.json");
 
 const getApi = (req, res, next) => {
@@ -17,50 +24,71 @@ const getTopics = (req, res, next) => {
 
 const getArticles = (req, res, next) => {
   requestArticles()
-  .then((articles) => {
-    res.status(200).send({ articles: articles })
+    .then((articles) => {
+      res.status(200).send({ articles: articles });
+    })
+    .catch((err) => {
+      next(err);
+    });
+};
+
+const getArticleById = (req, res, next) => {
+  const article_id = req.params.article_id;
+
+  return requestArticle(article_id)
+    .then((article) => {
+      res.status(200).send(article);
+    })
+    .catch((err) => {
+      next(err);
+    });
+};
+
+const getCommentById = (req, res, next) => {
+  const article_id = req.params.article_id;
+
+  return requestCommentsFromArticle(article_id)
+    .then((comments) => {
+      res.status(200).send({ comments: comments });
+    })
+    .catch((err) => {
+      next(err);
+    });
+};
+
+const postComment = (req, res, next) => {
+  const { article_id } = req.params;
+  const comment = req.body;
+  return addNewComment(comment, article_id)
+  .then((comment) => {
+    if (comment.body === "") {
+      res.status(400).send({ message: "Bad request" });
+    } else {
+      res.status(201).send({ comment });
+    }
   })
   .catch((err) => {
     next(err);
   });
-}
+};
 
-const getArticleById = (req, res, next) => {
-  const article_id = req.params.article_id
-
-  return requestArticle(article_id)
-  .then((article) => {
-      res.status(200).send(article)
+const patchVotes = (req, res, next) => {
+  const { article_id } = req.params;
+  const { addedVotes } = req.body;
+  return requestUpdateVotes(addedVotes, article_id).then((article) => {
+    res.status(200).send({ article });
   })
   .catch((err) => {
-      next(err)
-  })
-}
+    next(err);
+  });
+};
 
-const getCommentById = (req, res, next) => {
-  const article_id = req.params.article_id
-
-  return requestCommentsFromArticle(article_id)
-  .then((comments) => {
-      res.status(200).send({comments: comments})
-  })
-  .catch((err) => {
-      next(err)
-  })
-}
-
-const postComment = (req, res, next) => {
-  const { article_id } = req.params
-  const comment = req.body
-  return addNewComment(comment, article_id)
-  .then((comment) => {
-    console.log(comment)
-    if (comment.body === "") {
-      res.status(400).send({message: "Bad request"})
-    } else {
-      res.status(201).send({comment})
-    }
-  })
-}
-
-module.exports = { getApi, getTopics, getArticles, getArticleById, getCommentById, postComment };
+module.exports = {
+  getApi,
+  getTopics,
+  getArticles,
+  getArticleById,
+  getCommentById,
+  postComment,
+  patchVotes,
+};
