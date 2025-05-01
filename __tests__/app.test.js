@@ -178,6 +178,27 @@ describe("POST /api/articles/:article_id/comments", () => {
   });
 });
 
+describe("PATCH /api/articles/:article_id", ()=> {
+  test("200: Request returns an updated article object with the correct number of inputted votes", ()=> {
+    return request(app)
+    .patch("/api/articles/3")
+    .send({ addedVotes: 30 })
+    .expect(200)
+    .then(({body}) => {
+      expect(body.article).toMatchObject({
+        article_id: 3,
+        title: expect.any(String),
+        topic: expect.any(String),
+        author: expect.any(String),
+        body: expect.any(String),
+        created_at: expect.any(String),
+        votes: 30,
+        article_img_url: expect.any(String)
+      })
+    })
+  })
+})
+
 describe("Error handling", () => {
   describe("GET /topics", () => {
     test("404: Returns 404 error when an incorrect path is provided", () => {
@@ -199,30 +220,41 @@ describe("Error handling", () => {
         });
     });
   });
-  describe("POST /api/articles/:article_id/comments", ()=> {
+  describe("POST /api/articles/:article_id/comments", () => {
     test("500: Resturns a 500 error when an invalid username is given", () => {
       return request(app)
-      .post("/api/articles/3/comments")
-      .send({
-        body: "Hello!",
-        username: "I AM ERROR",
-      })
-      .expect(500)
-      .then(({ body }) => {
-        expect(body.message).toBe("Internal server error");
-      });
-    })
+        .post("/api/articles/3/comments")
+        .send({
+          body: "Hello!",
+          username: "I AM ERROR",
+        })
+        .expect(500)
+        .then(({ body }) => {
+          expect(body.message).toBe("Internal server error");
+        });
+    });
     test("400: Resturns a 400 error when the comment body is empty", () => {
       return request(app)
-      .post("/api/articles/3/comments")
-      .send({
-        body: "",
-        username: "butter_bridge",
-      })
+        .post("/api/articles/3/comments")
+        .send({
+          body: "",
+          username: "butter_bridge",
+        })
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.message).toBe("Bad request");
+        });
+    });
+  });
+  describe("PATCH /api/articles/:article_id", ()=> {
+    test("400: Resturns a 400 error when the type of votes is not a number", () => {
+      return request(app)
+      .patch("/api/articles/3")
+      .send({ addedVotes: "ERROR" })
       .expect(400)
-      .then(({ body }) => {
-        expect(body.message).toBe("Bad request");
-      });
-    })
+        .then(({ body }) => {
+          expect(body.message).toBe("Bad request");
+        });
+    });
   })
 });
