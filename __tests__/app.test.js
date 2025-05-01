@@ -142,7 +142,7 @@ describe("GET /api/articles/:article_id/comments", () => {
           expect(comment).toEqual({
             comment_id: expect.any(Number),
             votes: expect.any(Number),
-            article_id: expect.any(Number),
+            article_id: 3,
             body: expect.any(String),
             created_at: expect.any(String),
             author: expect.any(String),
@@ -178,28 +178,42 @@ describe("POST /api/articles/:article_id/comments", () => {
   });
 });
 
-describe("PATCH /api/articles/:article_id", ()=> {
-  test("200: Request returns an updated article object with the correct number of inputted votes", ()=> {
+describe("DELETE /api/comments/:comment_id", () => {
+  test("204: Tests that request returns the corect status and no content and that the comment is scuessfully deleted from the database", () => {
     return request(app)
-    .patch("/api/articles/3")
-    .send({ addedVotes: 30 })
-    .expect(200)
-    .then(({body}) => {
-      expect(body.article).toMatchObject({
-        article_id: 3,
-        title: expect.any(String),
-        topic: expect.any(String),
-        author: expect.any(String),
-        body: expect.any(String),
-        created_at: expect.any(String),
-        votes: 30,
-        article_img_url: expect.any(String)
+      .delete("/api/comments/4")
+      .expect(204)
+      .then(() => {
+        return db.query("SELECT FROM comments WHERE comment_id = 4");
       })
-    })
-  })
-})
+      .then((response) => {
+        expect(response.rows.length).toBe(0);
+      });
+  });
+});
 
-describe("Error handling", () => {
+describe("PATCH /api/articles/:article_id", () => {
+  test("200: Request returns an updated article object with the correct number of inputted votes", () => {
+    return request(app)
+      .patch("/api/articles/3")
+      .send({ addedVotes: 30 })
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.article).toMatchObject({
+          article_id: 3,
+          title: expect.any(String),
+          topic: expect.any(String),
+          author: expect.any(String),
+          body: expect.any(String),
+          created_at: expect.any(String),
+          votes: 30,
+          article_img_url: expect.any(String),
+        });
+      });
+  });
+});
+
+describe.only("Error handling", () => {
   describe("GET /topics", () => {
     test("404: Returns 404 error when an incorrect path is provided", () => {
       return request(app)
@@ -246,15 +260,34 @@ describe("Error handling", () => {
         });
     });
   });
-  describe("PATCH /api/articles/:article_id", ()=> {
+  describe("PATCH /api/articles/:article_id", () => {
     test("400: Resturns a 400 error when the type of votes is not a number", () => {
       return request(app)
-      .patch("/api/articles/3")
-      .send({ addedVotes: "ERROR" })
-      .expect(400)
+        .patch("/api/articles/3")
+        .send({ addedVotes: "ERROR" })
+        .expect(400)
         .then(({ body }) => {
           expect(body.message).toBe("Bad request");
         });
     });
-  })
+  });
+  describe("DELETE /api/comments/:comment_id", () => {
+    test("404: Returns a 404 error when attempting to delete a comment that doesn't exist", () => {
+      return request(app)
+        .delete("/api/comments/700")
+        .expect(404)
+        .then(({ body }) => {
+          console.log(body)
+          expect(body.message).toBe("comment_id not found");
+        });
+    });
+    test("400: Returns a 400 error when proving an incorrect type for the comment_id", () => {
+      return request(app)
+        .delete("/api/comments/commentFour")
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.message).toBe("Bad request");
+        });
+    });
+  });
 });

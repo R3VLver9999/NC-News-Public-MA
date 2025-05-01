@@ -5,6 +5,7 @@ const {
   requestCommentsFromArticle,
   addNewComment,
   requestUpdateVotes,
+  requestDeleteComment,
 } = require("./news.model.js");
 const endpointsJson = require("./endpoints.json");
 
@@ -83,6 +84,17 @@ const patchVotes = (req, res, next) => {
   });
 };
 
+const deleteComment = (req, res, next) => {
+  const {comment_id} = req.params
+  return requestDeleteComment(comment_id)
+  .then(() => {
+    res.status(204).send({})
+  })
+  .catch((err) => {
+    next(err);
+  });
+}
+
 module.exports = {
   getApi,
   getTopics,
@@ -91,4 +103,5 @@ module.exports = {
   getCommentById,
   postComment,
   patchVotes,
+  deleteComment,
 };

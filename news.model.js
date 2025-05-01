@@ -61,13 +61,30 @@ const addNewComment = (comment, article_id) => {
 };
 
 const requestUpdateVotes = (addedVotes, article_id) => {
-  return db.query(
-    `UPDATE articles SET votes = votes + $1 WHERE article_id = $2 RETURNING *`,
-    [addedVotes, article_id]
-  )
-  .then(({rows}) => {
-    return rows[0]
-  })
+  return db
+    .query(
+      `UPDATE articles SET votes = votes + $1 WHERE article_id = $2 RETURNING *`,
+      [addedVotes, article_id]
+    )
+    .then(({ rows }) => {
+      return rows[0];
+    });
+};
+
+const checkCommentExists = (comment_id) => {
+  return db
+    .query(`SELECT * FROM comments WHERE comment_id = $1`, [comment_id])
+    .then(({ rows }) => {
+      if (rows.length === 0) {
+        return Promise.reject({ status: 404, message: "comment_id not found" });
+      }
+    });
+};
+
+const requestDeleteComment = (comment_id) => {
+  return checkCommentExists(comment_id).then(() => {
+    return db.query(`DELETE FROM comments WHERE comment_id = $1`, [comment_id]);
+  });
 };
 
 module.exports = {
@@ -77,4 +94,5 @@ module.exports = {
   requestCommentsFromArticle,
   addNewComment,
   requestUpdateVotes,
+  requestDeleteComment,
 };
