@@ -47,6 +47,12 @@ const requestCommentsFromArticle = (article_id) => {
     });
 };
 
+const requestUsers = () => {
+  return db.query(`SELECT * FROM users`).then(({ rows }) => {
+    return rows;
+  });
+};  
+
 const addNewComment = (comment, article_id) => {
   return db
     .query(
@@ -95,4 +101,5 @@ module.exports = {
   addNewComment,
   requestUpdateVotes,
   requestDeleteComment,
+  requestUsers
 };

@@ -160,6 +160,32 @@ describe("GET /api/articles/:article_id/comments", () => {
   });
 });
 
+describe.only("GET /users", () => {
+  test("200: Responds with an object", () => {
+    return request(app)
+      .get("/api/users")
+      .expect(200)
+      .then((response) => {
+        expect(typeof response.body).toBe("object");
+      });
+  });
+  test("200: Responds with an object of users that contain the correct properties", () => {
+    return request(app)
+      .get("/api/users")
+      .expect(200)
+      .then((response) => {
+        expect(response.body.users.length).toBe(4);
+        response.body.users.forEach((user) => {
+          expect(user).toEqual({
+            username: expect.any(String),
+            name: expect.any(String),
+            avatar_url: expect.any(String),
+          });
+        });
+      });
+  });
+});
+
 describe("POST /api/articles/:article_id/comments", () => {
   test("200: Tests that request returns posted comment", () => {
     return request(app)
@@ -213,7 +239,7 @@ describe("PATCH /api/articles/:article_id", () => {
   });
 });
 
-describe.only("Error handling", () => {
+describe("Error handling", () => {
   describe("GET /topics", () => {
     test("404: Returns 404 error when an incorrect path is provided", () => {
       return request(app)
