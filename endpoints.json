@@ -9,8 +9,8 @@
     }
   },
   "GET /api/articles": {
-    "description": "serves an array of all articles, allows to be sorted by any of the articles properties in ascending or descending order",
-    "queries": ["sort_by", "order"],
+    "description": "serves an array of all articles, allows to be sorted by any of the articles properties in ascending or descending order, allows user to filter articles by topic",
+    "queries": ["sort_by", "order", "topic"],
     "exampleResponse": {
       "articles": [
         {
