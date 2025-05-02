@@ -160,7 +160,7 @@ describe("GET /api/articles/:article_id/comments", () => {
   });
 });
 
-describe.only("GET /users", () => {
+describe("GET /users", () => {
   test("200: Responds with an object", () => {
     return request(app)
       .get("/api/users")
@@ -239,6 +239,141 @@ describe("PATCH /api/articles/:article_id", () => {
   });
 });
 
+describe("GET /api/articles sorting queries", () => {
+  describe("sort_by=title", () => {
+    test("200: Tests that the articles are returned sorted by title when the query is added", () => {
+      return request(app)
+        .get("/api/articles?sort_by=title")
+        .expect(200)
+        .then((response) => {
+          expect(response.body.articles.length).toBe(13);
+          expect(response.body.articles).toBeSortedBy("title", {
+            descending: true,
+          });
+        });
+    });
+    test("200: Tests that the articles are returned sorted by title in ascending order when the query is added", () => {
+      return request(app)
+        .get("/api/articles?sort_by=title&order=ASC")
+        .expect(200)
+        .then((response) => {
+          expect(response.body.articles.length).toBe(13);
+          expect(response.body.articles).toBeSortedBy("title");
+        });
+    });
+  });
+  describe("sort_by=topic", () => {
+    test("200: Tests that the articles are returned sorted by topic when the query is added", () => {
+      return request(app)
+        .get("/api/articles?sort_by=topic")
+        .expect(200)
+        .then((response) => {
+          expect(response.body.articles.length).toBe(13);
+          expect(response.body.articles).toBeSortedBy("topic", {
+            descending: true,
+          });
+        });
+    });
+    test("200: Tests that the articles are returned sorted by topic in ascending order when the query is added", () => {
+      return request(app)
+        .get("/api/articles?sort_by=topic&order=ASC")
+        .expect(200)
+        .then((response) => {
+          expect(response.body.articles.length).toBe(13);
+          expect(response.body.articles).toBeSortedBy("topic");
+        });
+    });
+  });
+  describe("sort_by=author", () => {
+    test("200: Tests that the articles are returned sorted by author when the query is added", () => {
+      return request(app)
+        .get("/api/articles?sort_by=author")
+        .expect(200)
+        .then((response) => {
+          expect(response.body.articles.length).toBe(13);
+          expect(response.body.articles).toBeSortedBy("author", {
+            descending: true,
+          });
+        });
+    });
+    test("200: Tests that the articles are returned sorted by author in ascending order when the query is added", () => {
+      return request(app)
+        .get("/api/articles?sort_by=author&order=ASC")
+        .expect(200)
+        .then((response) => {
+          expect(response.body.articles.length).toBe(13);
+          expect(response.body.articles).toBeSortedBy("author");
+        });
+    });
+  });
+  describe("sort_by=created_at", () => {
+    test("200: Tests that the articles are returned sorted by created_at when the query is added", () => {
+      return request(app)
+        .get("/api/articles?sort_by=created_at")
+        .expect(200)
+        .then((response) => {
+          expect(response.body.articles.length).toBe(13);
+          expect(response.body.articles).toBeSortedBy("created_at", {
+            descending: true,
+          });
+        });
+    });
+    test("200: Tests that the articles are returned sorted by created_at in ascending order when the query is added", () => {
+      return request(app)
+        .get("/api/articles?sort_by=created_at&order=ASC")
+        .expect(200)
+        .then((response) => {
+          expect(response.body.articles.length).toBe(13);
+          expect(response.body.articles).toBeSortedBy("created_at");
+        });
+    });
+  });
+  describe("sort_by=votes", () => {
+    test("200: Tests that the articles are returned sorted by votes when the query is added", () => {
+      return request(app)
+        .get("/api/articles?sort_by=votes")
+        .expect(200)
+        .then((response) => {
+          expect(response.body.articles.length).toBe(13);
+          expect(response.body.articles).toBeSortedBy("votes", {
+            descending: true,
+          });
+        });
+    });
+    test("200: Tests that the articles are returned sorted by votes in ascending order when the query is added", () => {
+      return request(app)
+        .get("/api/articles?sort_by=votes&order=ASC")
+        .expect(200)
+        .then((response) => {
+          expect(response.body.articles.length).toBe(13);
+          expect(response.body.articles).toBeSortedBy("votes");
+        });
+    });
+  });
+  describe("sort_by=article_id", () => {
+    test("200: Tests that the articles are returned sorted by article_id when the query is added", () => {
+      return request(app)
+        .get("/api/articles?sort_by=article_id")
+        .expect(200)
+        .then((response) => {
+          expect(response.body.articles.length).toBe(13);
+          expect(response.body.articles).toBeSortedBy("article_id", {
+            descending: true,
+          });
+        });
+    });
+    test("200: Tests that the articles are returned sorted by article_id in ascending order when the query is added", () => {
+      return request(app)
+        .get("/api/articles?sort_by=article_id&order=ASC")
+        .expect(200)
+        .then((response) => {
+          expect(response.body.articles.length).toBe(13);
+          expect(response.body.articles).toBeSortedBy("article_id");
+        });
+    });
+  });
+});
+
 describe("Error handling", () => {
   describe("GET /topics", () => {
     test("404: Returns 404 error when an incorrect path is provided", () => {
@@ -303,7 +438,6 @@ describe("Error handling", () => {
         .delete("/api/comments/700")
         .expect(404)
         .then(({ body }) => {
-          console.log(body)
           expect(body.message).toBe("comment_id not found");
         });
     });
@@ -313,6 +447,24 @@ describe("Error handling", () => {
         .expect(400)
         .then(({ body }) => {
           expect(body.message).toBe("Bad request");
+        });
+    });
+  });
+  describe("GET /api/articles sorting queries", () => {
+    test("404: Returns 404 when sort_criteria is not valid", () => {
+      return request(app)
+        .get("/api/articles?sort_by=banana")
+        .expect(404)
+        .then((response) => {
+          expect(response.body.message).toBe("Invalid input");
+        });
+    });
+    test("404: Returns 404 when sort_criteria is not valid", () => {
+      return request(app)
+        .get("/api/articles?sort_by=title&order=banana")
+        .expect(404)
+        .then((response) => {
+          expect(response.body.message).toBe("Invalid input");
         });
     });
   });
