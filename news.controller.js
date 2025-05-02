@@ -6,7 +6,7 @@ const {
   addNewComment,
   requestUpdateVotes,
   requestDeleteComment,
-  requestUsers
+  requestUsers,
 } = require("./news.model.js");
 const endpointsJson = require("./endpoints.json");
 
@@ -25,10 +25,10 @@ const getTopics = (req, res, next) => {
 };
 
 const getArticles = (req, res, next) => {
-  const { sort_by } = req.query
-  const { order } = req.query
-
-  requestArticles(sort_by, order)
+  const { sort_by } = req.query;
+  const { order } = req.query;
+  const { topic } = req.query;
+  requestArticles(sort_by, order, topic)
     .then((articles) => {
       res.status(200).send({ articles: articles });
     })
@@ -75,39 +75,40 @@ const postComment = (req, res, next) => {
   const { article_id } = req.params;
   const comment = req.body;
   return addNewComment(comment, article_id)
-  .then((comment) => {
-    if (comment.body === "") {
-      res.status(400).send({ message: "Bad request" });
-    } else {
-      res.status(201).send({ comment });
-    }
-  })
-  .catch((err) => {
-    next(err);
-  });
+    .then((comment) => {
+      if (comment.body === "") {
+        res.status(400).send({ message: "Bad request" });
+      } else {
+        res.status(201).send({ comment });
+      }
+    })
+    .catch((err) => {
+      next(err);
+    });
 };
 
 const patchVotes = (req, res, next) => {
   const { article_id } = req.params;
   const { addedVotes } = req.body;
-  return requestUpdateVotes(addedVotes, article_id).then((article) => {
-    res.status(200).send({ article });
-  })
-  .catch((err) => {
-    next(err);
-  });
+  return requestUpdateVotes(addedVotes, article_id)
+    .then((article) => {
+      res.status(200).send({ article });
+    })
+    .catch((err) => {
+      next(err);
+    });
 };
 
 const deleteComment = (req, res, next) => {
-  const {comment_id} = req.params
+  const { comment_id } = req.params;
   return requestDeleteComment(comment_id)
-  .then(() => {
-    res.status(204).send({})
-  })
-  .catch((err) => {
-    next(err);
-  });
-}
+    .then(() => {
+      res.status(204).send({});
+    })
+    .catch((err) => {
+      next(err);
+    });
+};
 
 module.exports = {
   getApi,
@@ -118,5 +119,5 @@ module.exports = {
   postComment,
   patchVotes,
   deleteComment,
-  getUsers
+  getUsers,
 };
