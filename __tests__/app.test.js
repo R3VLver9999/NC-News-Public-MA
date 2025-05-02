@@ -459,7 +459,7 @@ describe("Error handling", () => {
           expect(response.body.message).toBe("Invalid input");
         });
     });
-    test("404: Returns 404 when sort_criteria is not valid", () => {
+    test("404: Returns 404 when order is not valid", () => {
       return request(app)
         .get("/api/articles?sort_by=title&order=banana")
         .expect(404)
