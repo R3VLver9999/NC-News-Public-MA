@@ -65,18 +65,19 @@ describe("GET /article/:article_id", () => {
   });
   test("200: Tests that article object has the correct properties", () => {
     return request(app)
-      .get("/api/articles/2")
+      .get("/api/articles/1")
       .expect(200)
       .then((response) => {
         expect(response.body).toEqual({
           author: expect.any(String),
           title: expect.any(String),
-          article_id: expect.any(Number),
+          article_id: 1,
           topic: expect.any(String),
           created_at: expect.any(String),
           votes: expect.any(Number),
           article_img_url: expect.any(String),
           body: expect.any(String),
+          comment_count: "11"
         });
       });
   });
