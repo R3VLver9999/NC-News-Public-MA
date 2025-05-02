@@ -6,6 +6,7 @@ const {
   addNewComment,
   requestUpdateVotes,
   requestDeleteComment,
+  requestUsers
 } = require("./news.model.js");
 const endpointsJson = require("./endpoints.json");
 
@@ -51,6 +52,16 @@ const getCommentById = (req, res, next) => {
   return requestCommentsFromArticle(article_id)
     .then((comments) => {
       res.status(200).send({ comments: comments });
+    })
+    .catch((err) => {
+      next(err);
+    });
+};
+
+const getUsers = (req, res, next) => {
+  requestUsers()
+    .then((users) => {
+      res.status(200).send({ users: users });
     })
     .catch((err) => {
       next(err);
@@ -104,4 +115,5 @@ module.exports = {
   postComment,
   patchVotes,
   deleteComment,
+  getUsers
 };
