@@ -1,7 +1,7 @@
 const endpointsJson = require("../endpoints.json");
 /* Set up your test imports here */
 const db = require("../db/connection.js");
-const app = require("../api.js");
+const app = require("../app.js");
 const request = require("supertest");
 const seed = require("../db/seeds/seed.js");
 const data = require("../db/data/test-data/index.js");
