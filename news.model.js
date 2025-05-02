@@ -6,24 +6,53 @@ const requestTopics = () => {
   });
 };
 
-const requestArticles = (sort_criteria = "created_at", order = "DESC") => {
-  const sortGreenlist = ["title", "topic", "author", "created_at", "votes", "article_id"]
-  const orderGreenlist = ["ASC", "DESC"]
-  if (!sortGreenlist.includes(sort_criteria) || !orderGreenlist.includes(order)){
-    return Promise.reject({status: 404, message: "Invalid input"})
-   } else if  (sortGreenlist.includes(sort_criteria) && orderGreenlist.includes(order)){
+const requestArticles = (
+  sort_criteria = "created_at",
+  order = "DESC",
+  topic = "NULL"
+) => {
+  const sortGreenlist = [
+    "title",
+    "topic",
+    "author",
+    "created_at",
+    "votes",
+    "article_id",
+  ];
+  const orderGreenlist = ["ASC", "DESC"];
+  if (
+    !sortGreenlist.includes(sort_criteria) ||
+    !orderGreenlist.includes(order)
+  ) {
+    return Promise.reject({ status: 404, message: "Invalid input" });
+  } else if (
+    sortGreenlist.includes(sort_criteria) &&
+    orderGreenlist.includes(order)
+  ) {
     return db
-    .query(
-      `SELECT articles.author, articles.title, articles.article_id, articles.topic, articles.created_at, articles.votes, articles.article_img_url, COUNT(comments.body) AS comment_count 
+      .query(
+        `SELECT articles.author, articles.title, articles.article_id, articles.topic, articles.created_at, articles.votes, articles.article_img_url, COUNT(comments.body) AS comment_count 
       FROM articles
       LEFT JOIN comments ON articles.article_id = comments.article_id
       GROUP BY articles.article_id
       ORDER BY ${sort_criteria} ${order};`
-    )
-    .then(({ rows }) => {
-        return rows
-    })
-   }
+      )
+      .then(({ rows }) => {
+        if (topic === "NULL") {
+          return rows;
+        } else if (topic !== "NULL") {
+          const updatedRows = rows.filter((article) => article.topic === topic);
+          if (updatedRows.length === 0) {
+            return Promise.reject({
+              status: 404,
+              message: "Found no articles with this topic",
+            });
+          } else {
+            return updatedRows;
+          }
+        }
+      });
+  }
 };
 
 const requestArticle = (article_id) => {
@@ -57,7 +86,7 @@ const requestUsers = () => {
   return db.query(`SELECT * FROM users`).then(({ rows }) => {
     return rows;
   });
-};  
+};
 
 const addNewComment = (comment, article_id) => {
   return db
@@ -107,5 +136,5 @@ module.exports = {
   addNewComment,
   requestUpdateVotes,
   requestDeleteComment,
-  requestUsers
+  requestUsers,
 };

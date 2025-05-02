@@ -374,6 +374,20 @@ describe("GET /api/articles sorting queries", () => {
   });
 });
 
+describe("GET /api/articles topic queries", () => {
+  test("200: Tests that the topic query sucessfully filters the returned arrays by the topic", () => {
+    return request(app)
+      .get("/api/articles?sort_by=article_id&order=ASC&topic=mitch")
+      .expect(200)
+      .then((response) => {
+        expect(response.body.articles.length).toBe(12);
+        response.body.articles.forEach((article) => {
+          expect(article.topic).toEqual("mitch");
+        });
+      });
+  });
+});
+
 describe("Error handling", () => {
   describe("GET /topics", () => {
     test("404: Returns 404 error when an incorrect path is provided", () => {
@@ -465,6 +479,16 @@ describe("Error handling", () => {
         .expect(404)
         .then((response) => {
           expect(response.body.message).toBe("Invalid input");
+        });
+    });
+  });
+  describe("GET /api/articles topic queries", () => {
+    test("404: Returns 404 when no articles with the specified topic are found", () => {
+      return request(app)
+        .get("/api/articles?topic=bananas")
+        .expect(404)
+        .then((response) => {
+          expect(response.body.message).toBe("Found no articles with this topic");
         });
     });
   });
