@@ -111,7 +111,10 @@ const seed = ({ topicData, userData, articleData, commentData }) => {
     .then((result) => {
       console.log(result)
       console.log("Seeding complete");
-    });
+    })
+    .catch(() => {
+      console.log("Error")
+    })
 };
 
 module.exports = seed;
