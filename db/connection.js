@@ -9,8 +9,6 @@ const config = {};
 if (ENV === "production") {
     config.connectionString = process.env.DATABASE_URL;
     config.max = 2;
-} else {
-    require('dotenv').config({path: `${__dirname}/../.env.${ENV}`})
 }
 
 const db = new Pool(config);

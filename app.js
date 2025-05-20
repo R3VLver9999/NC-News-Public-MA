@@ -11,7 +11,6 @@ const {
 } = require("./news.controller.js");
 const cors = require('cors');
 
-const db = require("./db/connection.js");
 const express = require("express");
 const app = express();
 app.use(express.json());
@@ -56,7 +55,7 @@ app.all("/*splat", (req, res, next) => {
 });
 
 app.use((err, req, res, next) => {
-  res.status(500).send({ message: "Internal server error" });
+  res.status(500).send({ message: "Internal server error", error: err });
 });
 
 module.exports = app;
